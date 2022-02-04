@@ -119,7 +119,9 @@ class UserProfileFeedViewSet(viewsets.ModelViewSet):
     """Handles creating, reading and updating profile feed items"""
     authentication_classes = (TokenAuthentication,)
     serializer_class = serializers.ProfileFeedItemSerializer
-    queryset = models.ProfileFeedItem.objects.all()
+
+    """Set queryset by default which gets the queryset object"""
+    #queryset = models.ProfileFeedItem.objects.filter(user_profile__id=1)
 
     permission_classes = (
         permissions.UpdateOwnStatus,
@@ -132,3 +134,6 @@ class UserProfileFeedViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Sets the user profile to the logged in user"""
         serializer.save(user_profile=self.request.user)
+
+    def get_queryset(self):
+        return models.ProfileFeedItem.objects.filter(user_profile__id=self.request.user.id)
